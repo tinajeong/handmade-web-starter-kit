@@ -1,0 +1,16 @@
+[
+  {
+    "id": 1,
+    "title": "코드 하이라이팅 적용하기",
+    "date": "2026-01-01",
+    "file": "posts/sample.md",
+    "summary": "코드 하이라이팅이 정상적으로 작동합니다."
+  },
+  {
+    "id": 2,
+    "title": "manifest.json에서 메타데이터 불러오기",
+    "date": "2026-01-02",
+    "file": "posts/sample-2.md",
+    "summary": "파일을 추가하고 manifest.json만 수정하면 끝입니다."
+  }
+]

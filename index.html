@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="ko">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Simple Markdown Blog</title>
+
+  <link rel="stylesheet" href="styles.css">
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css" />
+
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+  <script src="scripts/app.js" defer></script>
+</head>
+
+<body>
+  <header class="site-header">
+    <div class="shell">
+      <p class="eyebrow">Tech Blog</p>
+      <h1 class="site-title"><a href="/">Dev Log</a></h1>
+      <p class="lede">Marked와 Highlight.js로 구현한 심플한 블로그입니다.</p>
+    </div>
+  </header>
+
+  <main class="shell blog-layout">
+    <aside class="sidebar">
+      <div class="panel">
+        <header class="panel__header">
+          <p class="eyebrow">Posts</p>
+          <h2>글 목록</h2>
+        </header>
+        <ul id="post-list" class="post-list">
+          <li class="muted">로딩 중...</li>
+        </ul>
+      </div>
+    </aside>
+
+    <section class="content-area">
+      <article id="post-viewer" class="post">
+        <div class="placeholder-msg">
+          <h2>환영합니다!</h2>
+          <p class="muted">왼쪽 목록에서 글을 선택하여 읽어보세요.</p>
+        </div>
+      </article>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="shell">
+      <p class="muted">Built with Marked & Highlight.js</p>
+    </div>
+  </footer>
+</body>
+
+</html>

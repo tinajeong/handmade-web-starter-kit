@@ -1,0 +1,1 @@
+`manifest.json`에서 title, date, summary 메타데이터를 불러와 포스트 목록에 요약 정보를 추가했습니다.
