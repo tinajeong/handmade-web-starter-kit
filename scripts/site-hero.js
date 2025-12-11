@@ -23,7 +23,7 @@ const HERO_CONFIGS = {
     title: "Dev Log",
     lede: "Marked와 Highlight.js로 구현한 심플한 블로그입니다.",
     href: "/",
-    context: null,
+    context: "BROWSE · 글 목록 살펴보기",
   },
   summary: {
     eyebrow: "Tech Blog",
