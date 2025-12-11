@@ -13,44 +13,22 @@
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 
-  <script type="module" src="scripts/site-hero.js"></script>
-  <script type="module" src="scripts/feature-nav.js"></script>
-  <script type="module" src="scripts/theme.js"></script>
+  <script src="scripts/site-hero.js" defer></script>
+  <script src="scripts/feature-nav.js" defer></script>
   <script src="scripts/app.js" defer></script>
 </head>
 
 <body>
   <header class="site-header">
     <div class="shell">
-      <p class="eyebrow" data-hero-eyebrow>Tech Blog</p>
-      <h1 class="site-title"><a href="/" data-hero-title>Dev Log</a></h1>
-      <p class="lede" data-hero-lede>Marked와 Highlight.js로 구현한 심플한 블로그입니다.</p>
-
-      <nav class="feature-nav" aria-label="페이지 바로가기">
-        <ul class="feature-nav__list" data-feature-nav>
-          <li class="feature-nav__item"><a class="feature-nav__link" href="#post-list">글 목록</a></li>
-        </ul>
-      </nav>
-
-      <section class="palette" aria-label="컬러 팔레트 선택">
-        <p class="eyebrow">Palette</p>
-        <div class="palette__options" role="group" aria-label="테마 선택">
-          <button class="palette__chip" type="button" data-theme-choice="default">
-            <span class="palette__swatch palette__swatch--sunny" aria-hidden="true"></span>
-            옐로우
-          </button>
-          <button class="palette__chip" type="button" data-theme-choice="gray">
-            <span class="palette__swatch palette__swatch--gray" aria-hidden="true"></span>
-            그레이
-          </button>
-        </div>
-      </section>
+      <div data-component="site-hero" data-config="default"></div>
+      <div data-component="feature-nav" data-variant="horizontal" data-label="주요 기능"></div>
     </div>
   </header>
 
   <main class="shell blog-layout">
     <aside class="sidebar">
-      <div class="panel">
+      <div id="posts-panel" class="panel">
         <header class="panel__header">
           <p class="eyebrow">Posts</p>
           <h2>글 목록</h2>
@@ -59,15 +37,8 @@
         <div class="search" role="search">
           <label class="search__label" for="post-search">글 검색</label>
           <div class="search__controls">
-            <input
-              id="post-search"
-              class="search__input"
-              type="search"
-              name="query"
-              autocomplete="off"
-              placeholder="제목과 본문을 검색하세요"
-              aria-label="게시글 검색"
-            />
+            <input id="post-search" class="search__input" type="search" name="query" autocomplete="off"
+              placeholder="제목과 본문을 검색하세요" aria-label="게시글 검색" />
             <button class="search__clear" type="button" data-search-clear aria-label="검색어 지우기">
               지우기
             </button>

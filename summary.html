@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="ko">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Daily Digest - Dev Log</title>
+
+  <link rel="stylesheet" href="styles.css">
+
+  <script src="scripts/site-hero.js" defer></script>
+  <script src="scripts/feature-nav.js" defer></script>
+</head>
+
+<body>
+  <header class="site-header">
+    <div class="shell">
+      <div data-component="site-hero" data-config="summary"></div>
+      <div data-component="feature-nav" data-variant="horizontal" data-label="주요 기능" data-config="summary"></div>
+    </div>
+  </header>
+
+  <main class="shell summary-layout">
+    <section class="panel">
+      <header class="panel__header summary-header">
+        <div>
+          <p class="eyebrow">Digest</p>
+          <h2>연도별 타임라인</h2>
+        </div>
+        <a class="pill-link" href="/">← 목록으로 돌아가기</a>
+      </header>
+      <div id="timeline" class="digest-timeline">
+        <p class="muted">로딩 중...</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="shell">
+      <p class="muted">Built with Marked & Highlight.js</p>
+    </div>
+  </footer>
+
+  <script src="scripts/summary.js" defer></script>
+</body>
+
+</html>

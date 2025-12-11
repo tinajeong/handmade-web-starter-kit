@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 const selectors = {
   listContainer: document.getElementById('post-list'),
   viewer: document.getElementById('post-viewer'),
@@ -15,9 +16,23 @@ const state = {
   searchIndex: new Map(),
   searchQuery: '',
 };
+=======
+// DOM 요소 참조
+const listContainer = document.getElementById("post-list");
+const viewer = document.getElementById("post-viewer");
+>>>>>>> 547ea76 (feat : 하이라이트 기능 추가)
 
 const init = async () => {
+<<<<<<< HEAD
   if (!selectors.listContainer || !selectors.viewer) return;
+=======
+  try {
+    const response = await fetch("manifest.json");
+    if (!response.ok) throw new Error("목록을 불러오지 못했습니다.");
+
+    const posts = await response.json();
+    renderList(posts);
+>>>>>>> 547ea76 (feat : 하이라이트 기능 추가)
 
   selectors.viewer.setAttribute('tabindex', '-1');
   selectors.viewer.setAttribute('aria-live', 'polite');
@@ -41,7 +56,12 @@ const init = async () => {
     }
   } catch (error) {
     console.error(error);
+<<<<<<< HEAD
     selectors.listContainer.innerHTML = '<li class="muted">글 목록을 불러올 수 없습니다.</li>';
+=======
+    listContainer.innerHTML =
+      '<li class="muted">글 목록을 불러올 수 없습니다.</li>';
+>>>>>>> 547ea76 (feat : 하이라이트 기능 추가)
   }
 };
 
@@ -56,6 +76,7 @@ const renderLoadingList = () => {
 };
 
 const renderList = (posts) => {
+<<<<<<< HEAD
   if (!posts.length) {
     selectors.listContainer.innerHTML = '<li class="muted">검색 결과가 없습니다.</li>';
     return;
@@ -74,6 +95,29 @@ const renderList = (posts) => {
     const date = document.createElement('span');
     date.className = 'post-list__date';
     date.textContent = post.date;
+=======
+  listContainer.innerHTML = ""; // 로딩 메시지 제거
+
+  posts.forEach((post) => {
+    const li = document.createElement("li");
+    li.innerHTML = `
+      <span class="post-date">${post.date}</span>
+      <strong>${post.title}</strong>
+      <p class="summary">${post.summary}</p>
+    `;
+
+    // 클릭 이벤트: 해당 포스트의 파일 경로로 데이터 요청
+    li.addEventListener("click", () => {
+      // 활성화 스타일 처리
+      document
+        .querySelectorAll("#post-list li")
+        .forEach((item) => item.classList.remove("active"));
+      li.classList.add("active");
+
+      // 글 내용 로드
+      loadPost(post);
+    });
+>>>>>>> 547ea76 (feat : 하이라이트 기능 추가)
 
     const titleLink = document.createElement('a');
     titleLink.className = 'post-list__title';
@@ -208,6 +252,7 @@ const buildSearchIndex = async () => {
   });
 };
 
+<<<<<<< HEAD
 const selectPost = (postId, options = {}) => {
   const { updateHash = true } = options;
   if (state.activeId === postId) return;
@@ -231,6 +276,23 @@ const updateActiveItem = (postId) => {
     const titleLink = item.querySelector('.post-list__title');
     if (titleLink) {
       titleLink.setAttribute('aria-current', isActive ? 'true' : 'false');
+=======
+// 3. 개별 마크다운 파일 로드 및 렌더링
+const loadPost = async (post) => {
+  // 로딩 표시
+  viewer.style.opacity = "0.5";
+
+  try {
+    const response = await fetch(post.file);
+    if (!response.ok) throw new Error("글 내용을 불러오지 못했습니다.");
+
+    const markdownText = await response.text();
+    renderMarkdown(post, markdownText);
+
+    // 모바일 스크롤 처리
+    if (window.innerWidth < 768) {
+      viewer.scrollIntoView({ behavior: "smooth" });
+>>>>>>> 547ea76 (feat : 하이라이트 기능 추가)
     }
   });
 };
@@ -259,10 +321,14 @@ const loadPost = async (post) => {
     if (error.name === 'AbortError') return;
     selectors.viewer.innerHTML = `<div class="placeholder-msg">⚠️ ${error.message}</div>`;
   } finally {
+<<<<<<< HEAD
     selectors.viewer.classList.remove('is-loading');
     if (state.activeFetch === controller) {
       state.activeFetch = null;
     }
+=======
+    viewer.style.opacity = "1";
+>>>>>>> 547ea76 (feat : 하이라이트 기능 추가)
   }
 };
 
@@ -282,14 +348,27 @@ const getPostContent = async (post, signal) => {
 const renderMarkdown = (post, markdownText) => {
   const htmlContent = marked.parse(markdownText);
 
+<<<<<<< HEAD
   selectors.viewer.innerHTML = `
     <header class="post-header">
       <p class="eyebrow">${post.date}</p>
       <h1 class="post-title">${post.title}</h1>
+=======
+  viewer.innerHTML = `
+    <header class="post-header">
+      <div class="post-meta">
+        <p class="eyebrow">${post.date}</p>
+        <div class="post-title-group">
+          <h1>${post.title}</h1>
+          <p class="post-subtitle"></p>
+        </div>
+      </div>
+>>>>>>> 547ea76 (feat : 하이라이트 기능 추가)
     </header>
     <div class="post-body">${htmlContent}</div>
   `;
 
+<<<<<<< HEAD
   selectors.viewer.querySelectorAll('pre code').forEach(hljs.highlightElement);
 };
 
@@ -309,3 +388,13 @@ const getPostIdFromHash = () => {
 };
 
 document.addEventListener('DOMContentLoaded', init);
+=======
+  // 코드 하이라이팅 적용
+  viewer.querySelectorAll("pre code").forEach((el) => {
+    hljs.highlightElement(el);
+  });
+};
+
+// 앱 시작
+document.addEventListener("DOMContentLoaded", init);
+>>>>>>> 547ea76 (feat : 하이라이트 기능 추가)
