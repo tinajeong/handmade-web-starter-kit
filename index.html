@@ -15,6 +15,7 @@
 
   <script type="module" src="scripts/site-hero.js"></script>
   <script type="module" src="scripts/feature-nav.js"></script>
+  <script type="module" src="scripts/theme.js"></script>
   <script src="scripts/app.js" defer></script>
 </head>
 
@@ -30,6 +31,20 @@
           <li class="feature-nav__item"><a class="feature-nav__link" href="#post-list">글 목록</a></li>
         </ul>
       </nav>
+
+      <section class="palette" aria-label="컬러 팔레트 선택">
+        <p class="eyebrow">Palette</p>
+        <div class="palette__options" role="group" aria-label="테마 선택">
+          <button class="palette__chip" type="button" data-theme-choice="default">
+            <span class="palette__swatch palette__swatch--sunny" aria-hidden="true"></span>
+            옐로우
+          </button>
+          <button class="palette__chip" type="button" data-theme-choice="gray">
+            <span class="palette__swatch palette__swatch--gray" aria-hidden="true"></span>
+            그레이
+          </button>
+        </div>
+      </section>
     </div>
   </header>
 
