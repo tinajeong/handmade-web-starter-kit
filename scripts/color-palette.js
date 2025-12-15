@@ -13,6 +13,13 @@ const COLOR_THEMES = [
     swatchBase: "#d7d7d7",
     swatchContrast: "#1f1f1f",
   },
+  {
+    id: "dark",
+    label: "Dark Mode",
+    description: "야간 모드",
+    swatchBase: "#bb86fc",
+    swatchContrast: "#121212",
+  },
 ];
 
 const THEME_STORAGE_KEY = "preferred-theme";

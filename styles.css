@@ -7,13 +7,18 @@
   --font-scale: 1.25;
 
   /* Colors (Pop & Neo-Brutalism Theme) */
-  --color-bg: #f5f5f5; /* UPDATED: 전체 배경을 약간 회색으로, 컨텐츠 카드와 헤더가 더 분리되도록 */
+  --color-bg: #f4f4f5;
   --color-surface: #ffffff;
-  --color-text: #000000;
-  --color-muted: #555555;
+  --color-text: #1a1a1a;
+  --color-muted: #52525b;
   --color-border: #000000;
-  --color-accent: #ffd000;
-  --color-accent-hover: #ffea00;
+  --color-accent: #ffc800;
+  --color-accent-hover: #ffe066;
+  --color-header-bg: var(--color-accent);
+  --color-topbar-bg: var(--color-text);
+  --color-topbar-fg: var(--color-surface);
+  --color-topbar-chip-bg: var(--color-surface);
+  --color-topbar-chip-border: var(--color-border);
 
   /* Spacing */
   --space-1: 0.5rem;
@@ -23,6 +28,7 @@
 
   /* Style Tokens */
   --border-width: 3px;
+  --border-width-strong: 2px;
   --radius: 0px;
   --shadow-hard: 6px 6px 0px 0px var(--color-border);
 }
@@ -35,6 +41,31 @@
   --color-border: #1f1f1f;
   --color-accent: #cfcfcf;
   --color-accent-hover: #e1e1e1;
+  --color-header-bg: #dedede;
+  --color-topbar-bg: #2c2c2c;
+  --color-topbar-fg: #f8f8f8;
+  --color-topbar-chip-bg: #ffffff;
+  --color-topbar-chip-border: #3d3d3d;
+  --border-width: 3px;
+  --border-width-strong: 2px;
+}
+
+:root[data-theme="dark"] {
+  --color-bg: #121212;
+  --color-surface: #1e1e1e;
+  --color-text: #e0e0e0;
+  --color-muted: #a1a1aa;
+  --color-border: #333333;
+  --color-accent: #bb86fc;
+  --color-accent-hover: #d0a8ff;
+  --shadow-hard: 0 0 0 0 transparent;
+  --color-header-bg: #2a2434;
+  --color-topbar-bg: #2f2a3c;
+  --color-topbar-fg: #f5ecff;
+  --color-topbar-chip-bg: #252031;
+  --color-topbar-chip-border: #5b5371;
+  --border-width: 1px;
+  --border-width-strong: 1px;
 }
 
 * {
@@ -86,7 +117,7 @@ h3 {
 
 .site-header {
   border-bottom: var(--border-width) solid var(--color-border);
-  background: var(--color-accent);
+  background: var(--color-header-bg);
   box-shadow: var(--shadow-hard);
 }
 
@@ -101,8 +132,8 @@ h3 {
 }
 
 .site-topbar {
-  background: var(--color-text);
-  color: var(--color-surface);
+  background: var(--color-topbar-bg);
+  color: var(--color-topbar-fg);
   border-bottom: var(--border-width) solid var(--color-border);
   position: sticky;
   top: 0;
@@ -141,9 +172,9 @@ h3 {
   align-items: center;
   gap: 0.25rem;
   padding: 0.35rem 0.8rem;
-  border: 2px solid var(--color-border);
+  border: var(--border-width-strong) solid var(--color-topbar-chip-border);
   border-radius: var(--radius);
-  background: var(--color-surface);
+  background: var(--color-topbar-chip-bg);
   color: var(--color-text);
   font-size: 0.8rem;
   font-weight: 800;
@@ -233,8 +264,8 @@ h3 {
 .color-palette__button {
   width: 42px;
   height: 42px;
-  border-radius: 50%;
-  border: 2px solid var(--color-border);
+  border-radius: 30%;
+  border: var(--border-width-strong) solid var(--color-border);
   background: var(--swatch-base, var(--color-accent));
   box-shadow: var(--shadow-hard);
   cursor: pointer;
@@ -252,8 +283,8 @@ h3 {
 }
 
 .color-palette__button.is-active {
-  outline: 3px solid var(--color-text);
-  outline-offset: 4px;
+  outline: 1px solid var(--color-text);
+  outline-offset: 2px;
 }
 
 .color-palette__button.is-active::after {
@@ -321,7 +352,7 @@ main.shell {
   letter-spacing: 0.05em;
   font-size: 0.75rem;
   padding: 4px 8px;
-  border: 2px solid var(--color-border);
+  border: var(--border-width-strong) solid var(--color-border);
   margin-bottom: var(--space-2);
   transform: rotate(-1deg);
 }
@@ -370,7 +401,7 @@ main.shell {
   display: inline-block;
   background: var(--color-accent);
   padding: 0.35rem 0.65rem;
-  border: 2px solid var(--color-border);
+  border: var(--border-width-strong) solid var(--color-border);
   font-weight: 800;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -406,7 +437,7 @@ main.shell {
   align-items: center;
   justify-content: center;
   padding: 0.6rem 1rem;
-  border: 2px solid var(--color-border);
+  border: var(--border-width-strong) solid var(--color-border);
   font-weight: 800;
   text-transform: uppercase;
   text-decoration: none;
@@ -485,7 +516,7 @@ main.shell {
   flex-direction: column;
   gap: 0.35rem;
   padding: var(--space-2);
-  border: 2px solid var(--color-border);
+  border: var(--border-width-strong) solid var(--color-border);
   background: var(--color-surface);
   text-decoration: none;
   color: inherit;
@@ -576,7 +607,7 @@ main.shell {
   margin-top: var(--space-1);
   text-decoration: none;
   font-weight: 800;
-  border: 2px solid var(--color-border);
+  border: var(--border-width-strong) solid var(--color-border);
   padding: 0.4rem 0.8rem;
   box-shadow: var(--shadow-hard);
   background: var(--color-accent);
@@ -606,7 +637,7 @@ main.shell {
   align-items: center;
   gap: 4px;
   padding: 6px 14px;
-  border: 2px solid var(--color-border);
+  border: var(--border-width-strong) solid var(--color-border);
   background: var(--color-accent);
   text-decoration: none;
   color: var(--color-text);
@@ -651,7 +682,7 @@ main.shell {
   grid-template-columns: 100px 1fr;
   gap: var(--space-2);
   padding: var(--space-2);
-  border: 2px solid var(--color-border);
+  border: var(--border-width-strong) solid var(--color-border);
   background: var(--color-surface);
   box-shadow: var(--shadow-hard);
 }
@@ -663,7 +694,7 @@ main.shell {
   align-items: center;
   text-transform: uppercase;
   font-weight: 700;
-  border-right: 2px solid var(--color-border);
+  border-right: var(--border-width-strong) solid var(--color-border);
   padding-right: var(--space-1);
 }
 
@@ -711,11 +742,7 @@ main.shell {
 .post-header h1,
 .post-body h1 {
   font-size: 2.4rem;
-  display: inline;
-  margin-top: 0;
-  margin-bottom: var(--space-2);
-  line-height: 0.8; /* 라인 높이 조정 */
-  background-image: linear-gradient(transparent 65%, var(--color-accent) 75%);
+  display: inline-block;
   background-size: 100% 100%;
   background-repeat: no-repeat;
   padding: 0;
@@ -726,6 +753,11 @@ main.shell {
 
 .post-header {
   margin-bottom: var(--space-2);
+  margin-top: var(--space-1);
+}
+
+.post-header--full {
+  padding-top: var(--space-1);
 }
 
 .post-meta {
@@ -738,6 +770,13 @@ main.shell {
 .post-title-group {
   display: flex;
   flex-direction: column;
+  gap: var(--space-1);
+  margin-top: var(--space-1);
+  align-items: flex-start;
+}
+
+.post-title {
+  margin: 0;
 }
 
 .post-subtitle {

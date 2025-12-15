@@ -122,8 +122,10 @@ const renderMarkdown = (post, markdownText) => {
 
   selectors.viewer.innerHTML = `
     <header class="post-header post-header--full">
-      <p class="eyebrow">${post.date}</p>
-      <h1 class="post-title">${post.title}</h1>
+      <div class="post-title-group">
+        <p class="eyebrow">${post.date}</p>
+        <h1 class="post-title">${post.title}</h1>
+      </div>
     </header>
     <div class="post-body">${htmlContent}</div>
   `;
