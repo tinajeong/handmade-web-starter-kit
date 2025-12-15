@@ -236,6 +236,57 @@ main.shell { padding-block: var(--space-4); }
   margin-bottom: var(--space-2);
 }
 
+.search {
+  margin: var(--space-2) 0 var(--space-3);
+}
+
+.search__label {
+  display: block;
+  font-weight: 800;
+  margin-bottom: 0.4rem;
+}
+
+.search__controls {
+  display: flex;
+  gap: var(--space-1);
+  align-items: center;
+}
+
+.search__input {
+  flex: 1;
+  padding: 0.65rem 0.75rem;
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius);
+  font-size: 1rem;
+  box-shadow: inset 0 2px 0 rgba(0, 0, 0, 0.08);
+}
+
+.search__input:focus-visible {
+  outline: 3px solid var(--color-border);
+  outline-offset: 3px;
+}
+
+.search__clear {
+  padding: 0.65rem 0.9rem;
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-accent);
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: var(--shadow-hard);
+}
+
+.search__clear:hover,
+.search__clear:focus-visible {
+  transform: translate(2px, 2px);
+  box-shadow: 4px 4px 0px 0px var(--color-border);
+}
+
+.search__hint {
+  margin-top: 0.4rem;
+  font-size: 0.9rem;
+}
+
 /* Post list */
 .post-list {
   list-style: none;

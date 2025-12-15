@@ -55,6 +55,26 @@
           <p class="eyebrow">Posts</p>
           <h2>글 목록</h2>
         </header>
+
+        <div class="search" role="search">
+          <label class="search__label" for="post-search">글 검색</label>
+          <div class="search__controls">
+            <input
+              id="post-search"
+              class="search__input"
+              type="search"
+              name="query"
+              autocomplete="off"
+              placeholder="제목과 본문을 검색하세요"
+              aria-label="게시글 검색"
+            />
+            <button class="search__clear" type="button" data-search-clear aria-label="검색어 지우기">
+              지우기
+            </button>
+          </div>
+          <p class="search__hint muted">제목과 본문을 LIKE 방식으로 검색합니다.</p>
+        </div>
+
         <ul id="post-list" class="post-list">
           <li class="muted">로딩 중...</li>
         </ul>
