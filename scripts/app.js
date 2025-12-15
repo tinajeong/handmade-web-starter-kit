@@ -2,13 +2,18 @@ const selectors = {
   listContainer: document.getElementById('post-list'),
   viewer: document.getElementById('post-viewer'),
   loadingMessage: '<li class="muted">로딩 중...</li>',
+  searchInput: document.getElementById('post-search'),
+  searchClear: document.querySelector('[data-search-clear]'),
 };
 
 const state = {
   posts: [],
+  filteredPosts: [],
   activeId: null,
   postCache: new Map(),
   activeFetch: null,
+  searchIndex: new Map(),
+  searchQuery: '',
 };
 
 const init = async () => {
@@ -21,10 +26,14 @@ const init = async () => {
   selectors.listContainer.addEventListener('click', handleListClick);
   selectors.listContainer.addEventListener('keydown', handleListKeydown);
   window.addEventListener('hashchange', handleHashChange);
+  selectors.searchInput?.addEventListener('input', handleSearchInput);
+  selectors.searchInput?.addEventListener('search', handleSearchInput);
+  selectors.searchClear?.addEventListener('click', clearSearch);
 
   try {
     state.posts = await fetchManifest();
-    renderList(state.posts);
+    state.filteredPosts = state.posts;
+    renderList(state.filteredPosts);
 
     const initialId = getPostIdFromHash() ?? state.posts[0]?.id;
     if (initialId) {
@@ -47,6 +56,11 @@ const renderLoadingList = () => {
 };
 
 const renderList = (posts) => {
+  if (!posts.length) {
+    selectors.listContainer.innerHTML = '<li class="muted">검색 결과가 없습니다.</li>';
+    return;
+  }
+
   const fragment = document.createDocumentFragment();
 
   posts.forEach((post) => {
@@ -77,6 +91,14 @@ const renderList = (posts) => {
   selectors.listContainer.replaceChildren(fragment);
 };
 
+const debounce = (fn, delay = 200) => {
+  let timer;
+  return (...args) => {
+    clearTimeout(timer);
+    timer = setTimeout(() => fn(...args), delay);
+  };
+};
+
 const handleListClick = (event) => {
   const listItem = event.target.closest('li[data-post-id]');
   if (!listItem || !selectors.listContainer.contains(listItem)) return;
@@ -104,6 +126,86 @@ const handleHashChange = () => {
   if (postId) {
     selectPost(postId, { updateHash: false });
   }
+};
+
+const handleSearchInput = (event) => {
+  state.searchQuery = event.target.value.trim();
+  debouncedApplySearch();
+};
+
+const clearSearch = () => {
+  if (!selectors.searchInput) return;
+  selectors.searchInput.value = '';
+  state.searchQuery = '';
+  applySearch();
+  selectors.searchInput.focus();
+};
+
+const debouncedApplySearch = debounce(() => {
+  applySearch().catch((error) => console.error(error));
+}, 150);
+
+const applySearch = async () => {
+  const query = state.searchQuery.toLowerCase();
+
+  if (!query) {
+    state.filteredPosts = state.posts;
+    renderList(state.filteredPosts);
+    if (state.activeId) updateActiveItem(state.activeId);
+    if (!state.activeId && state.filteredPosts[0]) {
+      selectPost(state.filteredPosts[0].id);
+    }
+    return;
+  }
+
+  await buildSearchIndex();
+
+  state.filteredPosts = state.posts.filter((post) => {
+    const record = state.searchIndex.get(post.id);
+    if (!record) return false;
+
+    return record.title.includes(query) || record.content.includes(query);
+  });
+
+  renderList(state.filteredPosts);
+
+  if (!state.filteredPosts.length) {
+    state.activeId = null;
+    selectors.viewer.innerHTML = '<div class="placeholder-msg">🔍 검색 결과가 없습니다.</div>';
+    return;
+  }
+
+  if (!state.filteredPosts.some(({ id }) => id === state.activeId)) {
+    selectPost(state.filteredPosts[0].id);
+  } else if (state.activeId) {
+    updateActiveItem(state.activeId);
+  }
+};
+
+const buildSearchIndex = async () => {
+  const pendingPosts = state.posts.filter((post) => !state.searchIndex.has(post.id));
+  if (!pendingPosts.length) return;
+
+  const normalizeText = (text) => text
+    .toLowerCase()
+    .replace(/[`*_#>\[\]()-]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+  const entries = await Promise.all(
+    pendingPosts.map(async (post) => {
+      const markdownText = await getPostContent(post);
+      return {
+        id: post.id,
+        title: normalizeText(post.title),
+        content: normalizeText(markdownText),
+      };
+    }),
+  );
+
+  entries.forEach(({ id, title, content }) => {
+    state.searchIndex.set(id, { title, content });
+  });
 };
 
 const selectPost = (postId, options = {}) => {
