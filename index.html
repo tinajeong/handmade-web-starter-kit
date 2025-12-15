@@ -6,6 +6,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Simple Markdown Blog</title>
 
+  <script>
+    (() => {
+      try {
+        const theme = localStorage.getItem('preferred-theme');
+        if (theme && theme !== 'default') {
+          document.documentElement.setAttribute('data-theme', theme);
+        }
+      } catch (error) {
+        console.warn('Unable to restore theme', error);
+      }
+    })();
+  </script>
+
   <link rel="stylesheet" href="styles.css">
 
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css" />
@@ -13,41 +26,45 @@
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 
-  <script src="scripts/site-hero.js" defer></script>
-  <script src="scripts/feature-nav.js" defer></script>
+  <script src="scripts/color-palette.js" defer></script>
   <script src="scripts/app.js" defer></script>
 </head>
 
 <body>
   <header class="site-header">
-    <div class="shell">
-      <div data-component="site-hero" data-config="default"></div>
-      <div data-component="feature-nav" data-variant="horizontal" data-label="주요 기능"></div>
+    <div class="site-topbar">
+      <div class="shell site-topbar__inner">
+        <a class="site-topbar__logo" href="/">DEV LOG</a>
+        <nav class="site-topbar__nav" aria-label="상단 내비게이션">
+          <a class="site-topbar__link" href="/" aria-current="page">글 읽기</a>
+          <a class="site-topbar__link" href="posts.html">글 목록</a>
+          <a class="site-topbar__link" href="summary.html">요약 보기</a>
+        </nav>
+        <div class="site-topbar__actions">
+          <div data-component="color-palette" data-variant="compact" data-label="테마"></div>
+        </div>
+      </div>
     </div>
   </header>
 
-  <main class="shell blog-layout">
-    <aside class="sidebar">
-      <div id="posts-panel" class="panel">
-        <header class="panel__header">
-          <p class="eyebrow">Posts</p>
-          <h2>글 목록</h2>
-        </header>
-
-        <ul id="post-list" class="post-list">
-          <li class="muted">로딩 중...</li>
-        </ul>
+  <main class="shell article-layout">
+    <article id="post-viewer" class="post post--full">
+      <div class="placeholder-msg">
+        <h2>글을 불러오는 중...</h2>
+        <p class="muted">잠시만 기다려 주세요.</p>
       </div>
-    </aside>
+    </article>
 
-    <section class="content-area">
-      <article id="post-viewer" class="post">
-        <div class="placeholder-msg">
-          <h2>환영합니다!</h2>
-          <p class="muted">왼쪽 목록에서 글을 선택하여 읽어보세요.</p>
-        </div>
-      </article>
-    </section>
+    <nav id="post-nav" class="post-nav" aria-label="이전·다음 글 탐색">
+      <a class="post-nav__link" data-direction="prev" aria-disabled="true">
+        <span class="post-nav__eyebrow">이전 글</span>
+        <span class="post-nav__title">첫 번째 글입니다</span>
+      </a>
+      <a class="post-nav__link" data-direction="next" aria-disabled="true">
+        <span class="post-nav__eyebrow">다음 글</span>
+        <span class="post-nav__title">마지막 글입니다</span>
+      </a>
+    </nav>
   </main>
 
   <footer class="site-footer">

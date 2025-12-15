@@ -1,7 +1,6 @@
 const selectors = {
-  listContainer: document.getElementById('post-list'),
-  viewer: document.getElementById('post-viewer'),
-  loadingMessage: '<li class="muted">로딩 중...</li>',
+  viewer: document.getElementById("post-viewer"),
+  nav: document.getElementById("post-nav"),
 };
 
 const state = {
@@ -12,152 +11,93 @@ const state = {
 };
 
 const init = async () => {
-  if (!selectors.listContainer || !selectors.viewer) return;
+  if (!selectors.viewer) return;
 
-  selectors.viewer.setAttribute('tabindex', '-1');
-  selectors.viewer.setAttribute('aria-live', 'polite');
-  renderLoadingList();
+  selectors.viewer.setAttribute("tabindex", "-1");
+  selectors.viewer.setAttribute("aria-live", "polite");
 
-  selectors.listContainer.addEventListener('click', handleListClick);
-  selectors.listContainer.addEventListener('keydown', handleListKeydown);
-  window.addEventListener('hashchange', handleHashChange);
+  selectors.viewer.innerHTML = `
+    <div class="placeholder-msg">
+      <h2>글을 불러오는 중...</h2>
+      <p class="muted">잠시만 기다려 주세요.</p>
+    </div>
+  `;
+
+  selectors.nav?.addEventListener("click", handleNavClick);
+  window.addEventListener("popstate", handleLocationChange);
 
   try {
     state.posts = await fetchManifest();
-    renderList(state.posts);
-
-    const initialId = getPostIdFromHash() ?? state.posts[0]?.id;
-    if (initialId) {
-      selectPost(initialId);
+    if (!state.posts.length) {
+      selectors.viewer.innerHTML = `<div class="placeholder-msg">작성된 글이 없습니다.</div>`;
+      return;
     }
+
+    const initialId = getInitialPostId() ?? state.posts[0].id;
+    selectPost(initialId, { updateLocation: false });
   } catch (error) {
-    console.error(error);
-    selectors.listContainer.innerHTML = '<li class="muted">글 목록을 불러올 수 없습니다.</li>';
+    selectors.viewer.innerHTML = `<div class="placeholder-msg">⚠️ ${error.message}</div>`;
   }
 };
 
 const fetchManifest = async () => {
-  const response = await fetch('manifest.json');
-  if (!response.ok) throw new Error('목록을 불러오지 못했습니다.');
+  const response = await fetch("manifest.json");
+  if (!response.ok) throw new Error("글 목록을 불러오지 못했습니다.");
   return response.json();
 };
 
-const renderLoadingList = () => {
-  selectors.listContainer.innerHTML = selectors.loadingMessage;
+const getPostIdFromQuery = () => {
+  const params = new URLSearchParams(window.location.search);
+  const value = params.get("post");
+  return value ? Number(value) : null;
 };
 
-const renderList = (posts) => {
-  const fragment = document.createDocumentFragment();
-
-  posts.forEach((post) => {
-    const item = document.createElement('li');
-    item.className = 'post-list__item';
-    item.dataset.postId = post.id;
-    item.tabIndex = 0;
-    item.setAttribute('role', 'button');
-    item.setAttribute('aria-label', `${post.title} — ${post.date}`);
-
-    const date = document.createElement('span');
-    date.className = 'post-list__date';
-    date.textContent = post.date;
-
-    const titleLink = document.createElement('a');
-    titleLink.className = 'post-list__title';
-    titleLink.href = `#post-${post.id}`;
-    titleLink.textContent = post.title;
-
-    const summary = document.createElement('p');
-    summary.className = 'post-list__summary';
-    summary.textContent = post.summary;
-
-    item.append(date, titleLink, summary);
-    fragment.appendChild(item);
-  });
-
-  selectors.listContainer.replaceChildren(fragment);
+const getPostIdFromHash = () => {
+  const hash = window.location.hash;
+  if (!hash.startsWith("#post-")) return null;
+  const id = Number(hash.replace("#post-", ""));
+  return Number.isNaN(id) ? null : id;
 };
 
-const handleListClick = (event) => {
-  const listItem = event.target.closest('li[data-post-id]');
-  if (!listItem || !selectors.listContainer.contains(listItem)) return;
-
-  if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
-    return;
-  }
-
-  event.preventDefault();
-  selectPost(Number(listItem.dataset.postId));
-};
-
-const handleListKeydown = (event) => {
-  if (!['Enter', ' '].includes(event.key)) return;
-
-  const listItem = event.target.closest('li[data-post-id]');
-  if (!listItem) return;
-
-  event.preventDefault();
-  selectPost(Number(listItem.dataset.postId));
-};
-
-const handleHashChange = () => {
-  const postId = getPostIdFromHash();
-  if (postId) {
-    selectPost(postId, { updateHash: false });
-  }
-};
+const getInitialPostId = () => getPostIdFromQuery() ?? getPostIdFromHash();
 
 const selectPost = (postId, options = {}) => {
-  const { updateHash = true } = options;
-  if (state.activeId === postId) return;
+  const { updateLocation = true } = options;
+  const numericId = Number(postId);
+  if (state.activeId === numericId) return;
 
-  const post = state.posts.find(({ id }) => id === postId);
+  const post = state.posts.find(({ id }) => id === numericId);
   if (!post) return;
 
-  updateActiveItem(postId);
-  if (updateHash) syncHash(postId);
+  state.activeId = numericId;
+  if (updateLocation) syncLocation(numericId);
   loadPost(post);
+  updatePostNav(post);
 };
 
-const updateActiveItem = (postId) => {
-  state.activeId = postId;
-
-  selectors.listContainer.querySelectorAll('li[data-post-id]').forEach((item) => {
-    const isActive = Number(item.dataset.postId) === postId;
-    item.classList.toggle('active', isActive);
-    item.setAttribute('aria-current', isActive ? 'true' : 'false');
-
-    const titleLink = item.querySelector('.post-list__title');
-    if (titleLink) {
-      titleLink.setAttribute('aria-current', isActive ? 'true' : 'false');
-    }
-  });
+const handleLocationChange = () => {
+  const postId = getInitialPostId();
+  if (postId) selectPost(postId, { updateLocation: false });
 };
 
 const loadPost = async (post) => {
-  if (state.activeFetch) {
-    state.activeFetch.abort();
-  }
+  if (state.activeFetch) state.activeFetch.abort();
 
   const controller = new AbortController();
   state.activeFetch = controller;
-  selectors.viewer.classList.add('is-loading');
+  selectors.viewer.classList.add("is-loading");
 
   try {
     const markdownText = await getPostContent(post, controller.signal);
     if (controller.signal.aborted) return;
 
     renderMarkdown(post, markdownText);
-
-    if (window.innerWidth < 768) {
-      selectors.viewer.scrollIntoView({ behavior: 'smooth' });
-    }
-
     selectors.viewer.focus({ preventScroll: true });
   } catch (error) {
-    if (error.name === 'AbortError') return;
+    if (error.name === "AbortError") return;
     selectors.viewer.innerHTML = `<div class="placeholder-msg">⚠️ ${error.message}</div>`;
   } finally {
-    selectors.viewer.classList.remove('is-loading');
+    selectors.viewer.classList.remove("is-loading");
     if (state.activeFetch === controller) {
       state.activeFetch = null;
     }
@@ -170,7 +110,7 @@ const getPostContent = async (post, signal) => {
   }
 
   const response = await fetch(post.file, { signal });
-  if (!response.ok) throw new Error('글 내용을 불러오지 못했습니다.');
+  if (!response.ok) throw new Error("글 내용을 불러오지 못했습니다.");
 
   const markdownText = await response.text();
   state.postCache.set(post.file, markdownText);
@@ -181,29 +121,72 @@ const renderMarkdown = (post, markdownText) => {
   const htmlContent = marked.parse(markdownText);
 
   selectors.viewer.innerHTML = `
-    <header class="post-header">
+    <header class="post-header post-header--full">
       <p class="eyebrow">${post.date}</p>
       <h1 class="post-title">${post.title}</h1>
     </header>
     <div class="post-body">${htmlContent}</div>
   `;
 
-  selectors.viewer.querySelectorAll('pre code').forEach(hljs.highlightElement);
+  selectors.viewer.querySelectorAll("pre code").forEach(hljs.highlightElement);
 };
 
-const syncHash = (postId) => {
-  const targetHash = `#post-${postId}`;
-  if (window.location.hash !== targetHash) {
-    history.replaceState(null, '', targetHash);
+const syncLocation = (postId) => {
+  const url = new URL(window.location.href);
+  url.searchParams.set("post", postId);
+  url.hash = `post-${postId}`;
+  history.replaceState(null, "", url);
+};
+
+const updatePostNav = (currentPost) => {
+  if (!selectors.nav) return;
+
+  const index = state.posts.findIndex(({ id }) => id === currentPost.id);
+  const prev = state.posts[index - 1] ?? null;
+  const next = state.posts[index + 1] ?? null;
+
+  updateNavLink("prev", prev);
+  updateNavLink("next", next);
+};
+
+const updateNavLink = (direction, post) => {
+  if (!selectors.nav) return;
+  const link = selectors.nav.querySelector(`[data-direction="${direction}"]`);
+  if (!link) return;
+
+  const titleEl = link.querySelector(".post-nav__title");
+  const isPrev = direction === "prev";
+
+  link.querySelector(".post-nav__eyebrow").textContent = isPrev
+    ? "이전 글"
+    : "다음 글";
+
+  if (!post) {
+    link.setAttribute("aria-disabled", "true");
+    link.removeAttribute("href");
+    link.dataset.postId = "";
+    if (titleEl)
+      titleEl.textContent = isPrev ? "첫 번째 글입니다" : "마지막 글입니다";
+    return;
   }
+
+  link.setAttribute("aria-disabled", "false");
+  link.href = buildPostUrl(post.id);
+  link.dataset.postId = post.id;
+  if (titleEl) titleEl.textContent = post.title;
 };
 
-const getPostIdFromHash = () => {
-  const hash = window.location.hash;
-  if (!hash.startsWith('#post-')) return null;
+const handleNavClick = (event) => {
+  const link = event.target.closest("[data-direction]");
+  if (!link || link.getAttribute("aria-disabled") === "true") return;
 
-  const postId = Number(hash.replace('#post-', ''));
-  return Number.isFinite(postId) ? postId : null;
+  const targetId = Number(link.dataset.postId);
+  if (!targetId) return;
+
+  event.preventDefault();
+  selectPost(targetId);
 };
 
-document.addEventListener('DOMContentLoaded', init);
+const buildPostUrl = (postId) => `?post=${postId}`;
+
+init();
