@@ -76,7 +76,7 @@ const buildPalette = () => {
   document
     .querySelectorAll('[data-component="color-palette"]')
     .forEach((placeholder) => {
-      const labelText = placeholder.dataset.label ?? "Theme";
+      const labelText = "";
       const variant = placeholder.dataset.variant || "default";
 
       const wrapper = document.createElement("div");

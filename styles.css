@@ -83,6 +83,23 @@ body {
   border-top: 10px solid var(--color-border);
 }
 
+.hidden {
+  display: none !important;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  border: 0;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  overflow: hidden;
+  white-space: nowrap;
+}
+
 /* 링크 스타일 */
 a {
   color: var(--color-text);
@@ -198,6 +215,28 @@ h3 {
   display: flex;
   align-items: center;
   gap: var(--space-1);
+}
+
+.site-topbar__search-btn {
+  border: var(--border-width-strong) solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-size: 0.8rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.4rem 0.9rem;
+  box-shadow: var(--shadow-hard);
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.2s ease;
+}
+
+.site-topbar__search-btn:hover,
+.site-topbar__search-btn:focus-visible {
+  background: var(--color-accent);
+  color: var(--color-text);
+  transform: translate(2px, 2px);
+  box-shadow: 4px 4px 0px 0px var(--color-border);
 }
 
 /* 사이트 타이틀 */
@@ -832,6 +871,141 @@ pre code.hljs {
   border: var(--border-width) solid var(--color-border);
   box-shadow: var(--shadow-hard);
   font-weight: bold;
+}
+
+/* =========================
+   SEARCH OVERLAY
+   ========================= */
+
+.search-overlay {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(6px);
+  z-index: 200;
+  display: flex;
+  justify-content: center;
+  padding: 10vh var(--space-2) var(--space-2);
+}
+
+.search-container {
+  width: min(720px, 100%);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  position: relative;
+  color: var(--color-surface);
+}
+
+.search-overlay__close {
+  position: absolute;
+  top: 0;
+  right: 0;
+  border: none;
+  background: none;
+  color: var(--color-surface);
+  font-weight: 800;
+  font-size: 1rem;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.search-header {
+  color: var(--color-surface);
+  text-shadow: 0 0 30px rgba(0, 0, 0, 0.3);
+}
+
+.search-hint {
+  margin-top: 0.25rem;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.95rem;
+}
+
+#search-input {
+  width: 100%;
+  font-size: 2rem;
+  font-weight: 800;
+  padding: 1.2rem;
+  border: 3px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text);
+  box-shadow: 8px 8px 0 0 var(--color-accent);
+  outline: none;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+#search-input:focus {
+  transform: translate(-3px, -3px);
+  box-shadow: 12px 12px 0 0 var(--color-accent);
+}
+
+.search-results {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  max-height: 45vh;
+  overflow-y: auto;
+  padding-right: 0.25rem;
+}
+
+.search-result-item {
+  display: block;
+  border: var(--border-width) solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text);
+  padding: var(--space-1);
+  text-decoration: none;
+  box-shadow: 4px 4px 0 0 var(--color-border);
+  transition: transform 0.1s ease, background 0.1s ease, color 0.1s ease;
+}
+
+.search-result-item:hover,
+.search-result-item:focus-visible {
+  transform: translate(-2px, -2px);
+  background: var(--color-accent);
+  color: #000;
+}
+
+.search-result-title {
+  font-size: 1.25rem;
+  font-weight: 800;
+  margin: 0 0 0.25rem;
+}
+
+.search-result-date {
+  font-size: 0.9rem;
+  margin: 0;
+  color: var(--color-muted);
+}
+
+.search-result-summary {
+  margin: 0.5rem 0 0;
+  color: var(--color-text);
+  font-size: 1rem;
+}
+
+.search-empty {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 600;
+}
+
+@media (max-width: 640px) {
+  .search-overlay {
+    padding-top: var(--space-2);
+  }
+
+  #search-input {
+    font-size: 1.4rem;
+    padding: 1rem;
+  }
+
+  .search-result-title {
+    font-size: 1.1rem;
+  }
 }
 
 /* =========================

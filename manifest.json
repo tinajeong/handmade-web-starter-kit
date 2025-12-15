@@ -12,5 +12,12 @@
     "date": "2026-01-02",
     "file": "posts/sample-2.md",
     "summary": "파일을 추가하고 manifest.json만 수정하면 끝입니다."
+  },
+  {
+    "id": 3,
+    "title": "Markdown Test Post",
+    "date": "2026-01-03",
+    "file": "posts/sample-3.md",
+    "summary": "@mxstbr의 markdown test post를 가져왔습니다."
   }
 ]
