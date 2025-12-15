@@ -14,11 +14,16 @@
   --color-border: #000000;
   --color-accent: #ffc800;
   --color-accent-hover: #ffe066;
+  --color-accent-text: var(--color-text);
   --color-header-bg: var(--color-accent);
   --color-topbar-bg: var(--color-text);
   --color-topbar-fg: var(--color-surface);
   --color-topbar-chip-bg: var(--color-surface);
   --color-topbar-chip-border: var(--color-border);
+  --color-code-bg: #1e1e1e;
+  --code-border-color: var(--color-border);
+  --code-shadow: var(--shadow-hard);
+  --glow-strong: 0 0 0 rgba(0, 0, 0, 0);
 
   /* Spacing */
   --space-1: 0.5rem;
@@ -51,21 +56,27 @@
 }
 
 :root[data-theme="dark"] {
-  --color-bg: #121212;
-  --color-surface: #1e1e1e;
-  --color-text: #e0e0e0;
-  --color-muted: #a1a1aa;
-  --color-border: #333333;
-  --color-accent: #bb86fc;
-  --color-accent-hover: #d0a8ff;
-  --shadow-hard: 0 0 0 0 transparent;
-  --color-header-bg: #2a2434;
-  --color-topbar-bg: #2f2a3c;
-  --color-topbar-fg: #f5ecff;
-  --color-topbar-chip-bg: #252031;
-  --color-topbar-chip-border: #5b5371;
+  --color-bg: #050b1a;
+  --color-surface: #0f172a;
+  --color-text: #e2e8f0;
+  --color-muted: #94a3b8;
+  --color-border: #1f2a44;
+  --color-accent: #22d3ee;
+  --color-accent-hover: #67e8f9;
+  --color-accent-text: #021019;
+  --shadow-hard: 0 30px 60px -30px rgba(2, 6, 23, 0.9);
+  --color-header-bg: #050b1a;
+  --color-topbar-bg: #030816;
+  --color-topbar-fg: #e2e8f0;
+  --color-topbar-chip-bg: #0a1324;
+  --color-topbar-chip-border: #18213a;
   --border-width: 1px;
   --border-width-strong: 1px;
+  --radius: 12px;
+  --color-code-bg: #020817;
+  --code-border-color: transparent;
+  --code-shadow: 0 30px 65px -35px rgba(4, 9, 20, 0.9);
+  --glow-strong: 0 0 25px rgba(34, 211, 238, 0.6);
 }
 
 * {
@@ -109,7 +120,7 @@ a {
 }
 a:hover {
   background-color: var(--color-accent);
-  color: #000;
+  color: var(--color-accent-text);
   text-decoration: none;
 }
 
@@ -209,6 +220,7 @@ h3 {
 
 .site-topbar__link[aria-current="page"] {
   background: var(--color-accent);
+  color: var(--color-accent-text);
 }
 
 .site-topbar__actions {
@@ -234,7 +246,7 @@ h3 {
 .site-topbar__search-btn:hover,
 .site-topbar__search-btn:focus-visible {
   background: var(--color-accent);
-  color: var(--color-text);
+  color: var(--color-accent-text);
   transform: translate(2px, 2px);
   box-shadow: 4px 4px 0px 0px var(--color-border);
 }
@@ -257,8 +269,9 @@ h3 {
 }
 
 .site-title a:hover {
-  background: #000;
-  color: var(--color-accent);
+  background: var(--color-accent);
+  color: var(--color-accent-text);
+  box-shadow: var(--glow-strong);
 }
 
 /* 헤더 아래 서브 설명(lede)를 조금 더 차분하게 */
@@ -309,6 +322,17 @@ h3 {
   box-shadow: var(--shadow-hard);
   cursor: pointer;
   position: relative;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.color-palette__button:hover {
+  transform: translateY(-2px);
+}
+
+.color-palette__button:focus-visible {
+  outline: none;
+  border-color: var(--color-text);
+  box-shadow: var(--shadow-hard);
 }
 
 .color-palette__button::after {
@@ -322,13 +346,15 @@ h3 {
 }
 
 .color-palette__button.is-active {
-  outline: 1px solid var(--color-text);
-  outline-offset: 2px;
+  border-color: var(--color-accent);
+  box-shadow: var(--shadow-hard), var(--glow-strong);
+  transform: translateY(-2px);
 }
 
 .color-palette__button.is-active::after {
   opacity: 1;
   border-width: 3px;
+  border-color: var(--color-accent);
 }
 
 .color-palette--compact .color-palette__button {
@@ -385,7 +411,7 @@ main.shell {
 .eyebrow {
   display: inline-block;
   background: var(--color-accent);
-  color: var(--color-text);
+  color: var(--color-accent-text);
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -445,6 +471,7 @@ main.shell {
   letter-spacing: 0.08em;
   text-transform: uppercase;
   width: fit-content;
+  color: var(--color-accent-text);
 }
 
 .featured-card__title {
@@ -495,10 +522,18 @@ main.shell {
 
 .btn--primary {
   background: var(--color-accent);
+  color: var(--color-accent-text);
+  box-shadow: var(--shadow-hard), var(--glow-strong);
 }
 
 .btn--ghost {
   background: var(--color-surface);
+}
+
+.btn--primary:hover,
+.btn--primary:focus-visible {
+  transform: translateY(-2px);
+  box-shadow: var(--glow-strong);
 }
 
 .featured-card.is-loading {
@@ -565,9 +600,10 @@ main.shell {
 
 .post-nav__link:hover,
 .post-nav__link:focus-visible {
-  transform: translate(2px, 2px);
-  box-shadow: 4px 4px 0px 0px var(--color-border);
+  transform: translateY(-2px);
+  box-shadow: var(--glow-strong);
   background: var(--color-accent);
+  color: var(--color-accent-text);
 }
 
 .post-nav__link[aria-disabled="true"] {
@@ -650,13 +686,13 @@ main.shell {
   padding: 0.4rem 0.8rem;
   box-shadow: var(--shadow-hard);
   background: var(--color-accent);
-  color: var(--color-text);
+  color: var(--color-accent-text);
 }
 
 .post-card__link:hover,
 .post-card__link:focus-visible {
-  transform: translate(2px, 2px);
-  box-shadow: 4px 4px 0px 0px var(--color-border);
+  transform: translateY(-2px);
+  box-shadow: var(--glow-strong);
 }
 
 /* 날짜별 요약 */
@@ -679,15 +715,16 @@ main.shell {
   border: var(--border-width-strong) solid var(--color-border);
   background: var(--color-accent);
   text-decoration: none;
-  color: var(--color-text);
+  color: var(--color-accent-text);
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  box-shadow: 4px 4px 0 0 var(--color-border);
+  box-shadow: var(--shadow-hard), var(--glow-strong);
 }
 
 .pill-link:hover {
   background: var(--color-accent-hover);
+  box-shadow: var(--glow-strong);
 }
 
 .digest-timeline {
@@ -855,12 +892,12 @@ main.shell {
 
 /* 코드 블록 */
 pre code.hljs {
-  border: var(--border-width) solid var(--color-border);
-  border-radius: 0;
-  background: #1e1e1e;
+  border: 1px solid var(--code-border-color);
+  border-radius: 8px;
+  background: var(--color-code-bg);
   color: #fff;
   padding: var(--space-3);
-  box-shadow: var(--shadow-hard);
+  box-shadow: var(--code-shadow);
 }
 
 .placeholder-msg {
@@ -871,6 +908,7 @@ pre code.hljs {
   border: var(--border-width) solid var(--color-border);
   box-shadow: var(--shadow-hard);
   font-weight: bold;
+  color: var(--color-accent-text);
 }
 
 /* =========================
@@ -966,7 +1004,7 @@ pre code.hljs {
 .search-result-item:focus-visible {
   transform: translate(-2px, -2px);
   background: var(--color-accent);
-  color: #000;
+  color: var(--color-accent-text);
 }
 
 .search-result-title {

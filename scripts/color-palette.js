@@ -17,8 +17,8 @@ const COLOR_THEMES = [
     id: "dark",
     label: "Dark Mode",
     description: "야간 모드",
-    swatchBase: "#bb86fc",
-    swatchContrast: "#121212",
+    swatchBase: "#22d3ee",
+    swatchContrast: "#021019",
   },
 ];
 
