@@ -13,15 +13,23 @@
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 
+  <script type="module" src="scripts/site-hero.js"></script>
+  <script type="module" src="scripts/feature-nav.js"></script>
   <script src="scripts/app.js" defer></script>
 </head>
 
 <body>
   <header class="site-header">
     <div class="shell">
-      <p class="eyebrow">Tech Blog</p>
-      <h1 class="site-title"><a href="/">Dev Log</a></h1>
-      <p class="lede">Marked와 Highlight.js로 구현한 심플한 블로그입니다.</p>
+      <p class="eyebrow" data-hero-eyebrow>Tech Blog</p>
+      <h1 class="site-title"><a href="/" data-hero-title>Dev Log</a></h1>
+      <p class="lede" data-hero-lede>Marked와 Highlight.js로 구현한 심플한 블로그입니다.</p>
+
+      <nav class="feature-nav" aria-label="페이지 바로가기">
+        <ul class="feature-nav__list" data-feature-nav>
+          <li class="feature-nav__item"><a class="feature-nav__link" href="#post-list">글 목록</a></li>
+        </ul>
+      </nav>
     </div>
   </header>
 

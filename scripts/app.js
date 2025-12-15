@@ -1,94 +1,209 @@
-// DOM 요소 참조
-const listContainer = document.getElementById('post-list');
-const viewer = document.getElementById('post-viewer');
+const selectors = {
+  listContainer: document.getElementById('post-list'),
+  viewer: document.getElementById('post-viewer'),
+  loadingMessage: '<li class="muted">로딩 중...</li>',
+};
 
-// 1. 초기화: manifest.json을 가져와서 목록 생성
+const state = {
+  posts: [],
+  activeId: null,
+  postCache: new Map(),
+  activeFetch: null,
+};
+
 const init = async () => {
-  try {
-    const response = await fetch('manifest.json');
-    if (!response.ok) throw new Error('목록을 불러오지 못했습니다.');
-    
-    const posts = await response.json();
-    renderList(posts);
+  if (!selectors.listContainer || !selectors.viewer) return;
 
-    // (선택사항) 첫 번째 글 자동 로드
-    if (posts.length > 0) {
-      loadPost(posts[0]);
+  selectors.viewer.setAttribute('tabindex', '-1');
+  selectors.viewer.setAttribute('aria-live', 'polite');
+  renderLoadingList();
+
+  selectors.listContainer.addEventListener('click', handleListClick);
+  selectors.listContainer.addEventListener('keydown', handleListKeydown);
+  window.addEventListener('hashchange', handleHashChange);
+
+  try {
+    state.posts = await fetchManifest();
+    renderList(state.posts);
+
+    const initialId = getPostIdFromHash() ?? state.posts[0]?.id;
+    if (initialId) {
+      selectPost(initialId);
     }
   } catch (error) {
     console.error(error);
-    listContainer.innerHTML = '<li class="muted">글 목록을 불러올 수 없습니다.</li>';
+    selectors.listContainer.innerHTML = '<li class="muted">글 목록을 불러올 수 없습니다.</li>';
   }
 };
 
-// 2. 글 목록 렌더링
+const fetchManifest = async () => {
+  const response = await fetch('manifest.json');
+  if (!response.ok) throw new Error('목록을 불러오지 못했습니다.');
+  return response.json();
+};
+
+const renderLoadingList = () => {
+  selectors.listContainer.innerHTML = selectors.loadingMessage;
+};
+
 const renderList = (posts) => {
-  listContainer.innerHTML = ''; // 로딩 메시지 제거
+  const fragment = document.createDocumentFragment();
 
   posts.forEach((post) => {
-    const li = document.createElement('li');
-    li.innerHTML = `
-      <span class="post-date">${post.date}</span>
-      <strong>${post.title}</strong>
-      <p class="summary">${post.summary}</p>
-    `;
+    const item = document.createElement('li');
+    item.className = 'post-list__item';
+    item.dataset.postId = post.id;
+    item.tabIndex = 0;
+    item.setAttribute('role', 'button');
+    item.setAttribute('aria-label', `${post.title} — ${post.date}`);
 
-    // 클릭 이벤트: 해당 포스트의 파일 경로로 데이터 요청
-    li.addEventListener('click', () => {
-      // 활성화 스타일 처리
-      document.querySelectorAll('#post-list li').forEach(item => item.classList.remove('active'));
-      li.classList.add('active');
-      
-      // 글 내용 로드
-      loadPost(post);
-    });
+    const date = document.createElement('span');
+    date.className = 'post-list__date';
+    date.textContent = post.date;
 
-    listContainer.appendChild(li);
+    const titleLink = document.createElement('a');
+    titleLink.className = 'post-list__title';
+    titleLink.href = `#post-${post.id}`;
+    titleLink.textContent = post.title;
+
+    const summary = document.createElement('p');
+    summary.className = 'post-list__summary';
+    summary.textContent = post.summary;
+
+    item.append(date, titleLink, summary);
+    fragment.appendChild(item);
+  });
+
+  selectors.listContainer.replaceChildren(fragment);
+};
+
+const handleListClick = (event) => {
+  const listItem = event.target.closest('li[data-post-id]');
+  if (!listItem || !selectors.listContainer.contains(listItem)) return;
+
+  if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
+    return;
+  }
+
+  event.preventDefault();
+  selectPost(Number(listItem.dataset.postId));
+};
+
+const handleListKeydown = (event) => {
+  if (!['Enter', ' '].includes(event.key)) return;
+
+  const listItem = event.target.closest('li[data-post-id]');
+  if (!listItem) return;
+
+  event.preventDefault();
+  selectPost(Number(listItem.dataset.postId));
+};
+
+const handleHashChange = () => {
+  const postId = getPostIdFromHash();
+  if (postId) {
+    selectPost(postId, { updateHash: false });
+  }
+};
+
+const selectPost = (postId, options = {}) => {
+  const { updateHash = true } = options;
+  if (state.activeId === postId) return;
+
+  const post = state.posts.find(({ id }) => id === postId);
+  if (!post) return;
+
+  updateActiveItem(postId);
+  if (updateHash) syncHash(postId);
+  loadPost(post);
+};
+
+const updateActiveItem = (postId) => {
+  state.activeId = postId;
+
+  selectors.listContainer.querySelectorAll('li[data-post-id]').forEach((item) => {
+    const isActive = Number(item.dataset.postId) === postId;
+    item.classList.toggle('active', isActive);
+    item.setAttribute('aria-current', isActive ? 'true' : 'false');
+
+    const titleLink = item.querySelector('.post-list__title');
+    if (titleLink) {
+      titleLink.setAttribute('aria-current', isActive ? 'true' : 'false');
+    }
   });
 };
 
-// 3. 개별 마크다운 파일 로드 및 렌더링
 const loadPost = async (post) => {
-  // 로딩 표시
-  viewer.style.opacity = '0.5';
-  
+  if (state.activeFetch) {
+    state.activeFetch.abort();
+  }
+
+  const controller = new AbortController();
+  state.activeFetch = controller;
+  selectors.viewer.classList.add('is-loading');
+
   try {
-    const response = await fetch(post.file);
-    if (!response.ok) throw new Error('글 내용을 불러오지 못했습니다.');
-    
-    const markdownText = await response.text();
+    const markdownText = await getPostContent(post, controller.signal);
+    if (controller.signal.aborted) return;
+
     renderMarkdown(post, markdownText);
-    
-    // 모바일 스크롤 처리
+
     if (window.innerWidth < 768) {
-        viewer.scrollIntoView({ behavior: 'smooth' });
+      selectors.viewer.scrollIntoView({ behavior: 'smooth' });
     }
+
+    selectors.viewer.focus({ preventScroll: true });
   } catch (error) {
-    viewer.innerHTML = `<div class="placeholder-msg">⚠️ ${error.message}</div>`;
+    if (error.name === 'AbortError') return;
+    selectors.viewer.innerHTML = `<div class="placeholder-msg">⚠️ ${error.message}</div>`;
   } finally {
-    viewer.style.opacity = '1';
+    selectors.viewer.classList.remove('is-loading');
+    if (state.activeFetch === controller) {
+      state.activeFetch = null;
+    }
   }
 };
 
-// 4. 마크다운 변환 및 하이라이팅 적용
+const getPostContent = async (post, signal) => {
+  if (state.postCache.has(post.file)) {
+    return state.postCache.get(post.file);
+  }
+
+  const response = await fetch(post.file, { signal });
+  if (!response.ok) throw new Error('글 내용을 불러오지 못했습니다.');
+
+  const markdownText = await response.text();
+  state.postCache.set(post.file, markdownText);
+  return markdownText;
+};
+
 const renderMarkdown = (post, markdownText) => {
   const htmlContent = marked.parse(markdownText);
 
-  viewer.innerHTML = `
-    <header class="post-header" style="margin-bottom: 2rem;">
+  selectors.viewer.innerHTML = `
+    <header class="post-header">
       <p class="eyebrow">${post.date}</p>
-      <h1 style="margin-top:0.5rem;">${post.title}</h1>
+      <h1 class="post-title">${post.title}</h1>
     </header>
-    <div class="post-body">
-      ${htmlContent}
-    </div>
+    <div class="post-body">${htmlContent}</div>
   `;
 
-  // 코드 하이라이팅 적용
-  viewer.querySelectorAll('pre code').forEach((el) => {
-    hljs.highlightElement(el);
-  });
+  selectors.viewer.querySelectorAll('pre code').forEach(hljs.highlightElement);
 };
 
-// 앱 시작
+const syncHash = (postId) => {
+  const targetHash = `#post-${postId}`;
+  if (window.location.hash !== targetHash) {
+    history.replaceState(null, '', targetHash);
+  }
+};
+
+const getPostIdFromHash = () => {
+  const hash = window.location.hash;
+  if (!hash.startsWith('#post-')) return null;
+
+  const postId = Number(hash.replace('#post-', ''));
+  return Number.isFinite(postId) ? postId : null;
+};
+
 document.addEventListener('DOMContentLoaded', init);
