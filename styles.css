@@ -231,13 +231,21 @@ h3 {
 
 .site-topbar__search-btn {
   border: var(--border-width-strong) solid var(--color-border);
-  background: var(--color-surface);
-  color: var(--color-text);
+  border-color: var(--color-topbar-chip-border);
+  background: var(--color-topbar-chip-bg);
+  color: var(--color-topbar-fg);
   font-size: 0.8rem;
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  padding: 0.4rem 0.9rem;
+  padding: 0.5rem 1.1rem;
+  border-radius: var(--radius);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
+  min-height: 42px;
+  line-height: 1;
   box-shadow: var(--shadow-hard);
   cursor: pointer;
   transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.2s ease;
@@ -249,6 +257,10 @@ h3 {
   color: var(--color-accent-text);
   transform: translate(2px, 2px);
   box-shadow: 4px 4px 0px 0px var(--color-border);
+}
+
+:root[data-theme="dark"] .site-topbar__search-btn {
+  border-radius: 999px;
 }
 
 /* 사이트 타이틀 */
@@ -1065,6 +1077,46 @@ pre code.hljs {
     padding-top: var(--space-2);
     padding-bottom: var(--space-2);
     box-shadow: 4px 4px 0 0 var(--color-border);
+  }
+
+  .site-topbar__inner {
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: var(--space-1);
+  }
+
+  .site-topbar__logo {
+    flex: 1;
+  }
+
+  .site-topbar__search-btn {
+    margin-left: auto;
+  }
+
+  .site-topbar__actions {
+    order: 3;
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .site-topbar__nav {
+    order: 2;
+    width: 100%;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    gap: var(--space-1);
+    padding-bottom: 0.35rem;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .site-topbar__nav::-webkit-scrollbar {
+    display: none;
+  }
+
+  .site-topbar__link {
+    flex: 0 0 auto;
+    white-space: nowrap;
   }
 
   .site-title {
