@@ -29,16 +29,34 @@ const renderPosts = async () => {
           <p class="post-card__date">${post.date}</p>
           <h3 class="post-card__title">${post.title}</h3>
           <p class="post-card__summary">${post.summary}</p>
-          <a class="post-card__link" href="${buildPostUrl(post.id)}">바로 읽기</a>
+          <div class="post-card__actions">
+            <button
+              class="heart-button heart-button--small"
+              data-heart-button
+              data-post-id="${post.id}"
+              aria-pressed="false">
+              <span class="heart-button__icon" aria-hidden="true">♥</span>
+              <span class="heart-button__label" data-heart-label>좋아요</span>
+            </button>
+            <a class="post-card__link" href="${buildPostUrl(post.id)}">바로 읽기</a>
+          </div>
         </article>
       `
       )
       .join("");
 
     grid.innerHTML = cards;
+    wireHeartButtons();
   } catch (error) {
     grid.innerHTML = `<p class="muted">⚠️ ${error.message}</p>`;
   }
+};
+
+const wireHeartButtons = () => {
+  if (!window.PostHearts) return;
+  grid
+    .querySelectorAll("[data-heart-button]")
+    .forEach((button) => window.PostHearts.bindButton(button));
 };
 
 if (document.readyState === "loading") {

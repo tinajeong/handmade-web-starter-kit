@@ -593,6 +593,49 @@ main.shell {
   margin-bottom: var(--space-2);
 }
 
+.post-actions {
+  display: flex;
+  align-items: center;
+  margin-top: var(--space-1);
+}
+
+.heart-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.45rem 0.9rem;
+  border: var(--border-width-strong) solid var(--color-border);
+  background: var(--color-surface);
+  cursor: pointer;
+  font-weight: 700;
+  font-family: inherit;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-hard);
+  transition: transform 0.15s ease, box-shadow 0.15s ease,
+    background 0.15s ease;
+}
+
+.heart-button__icon {
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.heart-button:hover,
+.heart-button:focus-visible {
+  transform: translateY(-2px);
+  box-shadow: var(--glow-strong);
+}
+
+.heart-button.is-active {
+  background: var(--color-accent);
+  color: var(--color-accent-text);
+}
+
+.heart-button--small {
+  padding: 0.3rem 0.75rem;
+  font-size: 0.9rem;
+}
+
 .post-nav {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
@@ -691,9 +734,16 @@ main.shell {
   flex: 1;
 }
 
+.post-card__actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-1);
+  margin-top: var(--space-2);
+}
+
 .post-card__link {
   align-self: flex-start;
-  margin-top: var(--space-1);
   text-decoration: none;
   font-weight: 800;
   border: var(--border-width-strong) solid var(--color-border);

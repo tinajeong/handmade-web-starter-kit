@@ -126,11 +126,34 @@ const renderMarkdown = (post, markdownText) => {
         <p class="eyebrow">${post.date}</p>
         <h1 class="post-title">${post.title}</h1>
       </div>
+      ${buildHeartButton(post.id)}
     </header>
     <div class="post-body">${htmlContent}</div>
   `;
 
   selectors.viewer.querySelectorAll("pre code").forEach(hljs.highlightElement);
+  wireHeartButtons();
+};
+
+const buildHeartButton = (postId) => `
+  <div class="post-actions" role="group" aria-label="글 상호작용">
+    <button
+      class="heart-button"
+      type="button"
+      data-heart-button
+      data-post-id="${postId}"
+      aria-pressed="false">
+      <span class="heart-button__icon" aria-hidden="true">♥</span>
+      <span class="heart-button__label" data-heart-label>좋아요</span>
+    </button>
+  </div>
+`;
+
+const wireHeartButtons = () => {
+  if (!window.PostHearts) return;
+  selectors.viewer
+    .querySelectorAll("[data-heart-button]")
+    .forEach((button) => window.PostHearts.bindButton(button));
 };
 
 const syncLocation = (postId) => {
