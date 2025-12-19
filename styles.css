@@ -233,15 +233,19 @@ h3 {
   border: var(--border-width-strong) solid var(--color-border);
   border-color: var(--color-topbar-chip-border);
   background: var(--color-topbar-chip-bg);
-  color: var(--color-topbar-chip-border);
+  color: var(--color-text);
   font-size: 0.8rem;
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  padding: 0.5rem 1.0rem;
+  padding: 0.5rem 1.1rem;
   border-radius: var(--radius);
   display: inline-flex;
   align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
+  min-height: 42px;
+  line-height: 1;
   box-shadow: var(--shadow-hard);
   cursor: pointer;
   transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.2s ease;
@@ -257,6 +261,8 @@ h3 {
 
 :root[data-theme="dark"] .site-topbar__search-btn {
   border-radius: 999px;
+  color: var(--color-topbar-fg);
+}
 }
 
 /* 사이트 타이틀 */
